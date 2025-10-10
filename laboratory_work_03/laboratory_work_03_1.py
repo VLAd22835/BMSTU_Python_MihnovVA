@@ -1,4 +1,4 @@
-from math import *
+from math import sqrt
 xb = float(input("Введите значение для Xbeg="))
 xe = float(input("Введите значение для Xend="))
 dx = float(input("Введите значение для Dx="))

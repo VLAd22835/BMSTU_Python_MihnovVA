@@ -1,5 +1,4 @@
-from math import *
-from random import *
+from random import uniform
 R = float(input("Введите радиус R: "))
 flag = 0
 print ("     X      Y       Res")

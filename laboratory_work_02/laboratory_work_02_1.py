@@ -8,7 +8,7 @@ elif 0 <= x < 3:
     print ("X= ", x, ", Y= ", y)
 elif 3 <= x <= 6:
     y = (9-(x-6)**2)**(1/2)
-    print ("X= ", x, ", Y= ", y)
+print ("X = {0: 2f} Y = {1: 2f}".format(x, y))
 
 
 
