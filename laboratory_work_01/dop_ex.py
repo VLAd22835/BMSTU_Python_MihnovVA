@@ -1,9 +1,9 @@
-from math import *
+from math import cos, sin, tan
 
 alfa = float(input("введите значение aльфа: "))
 
-z1 = float(sin(2*alfa)+sin(5*alfa)-sin(3*alfa)/cos(alfa)+1-2*sin(2*alfa)**2)
-z2 = float(2*sin(alfa))
+z1 = float (2*cos(alfa)*sin(2*alfa)-sin(alfa)/cos(alfa)-2*sin(alfa)*sin(2*alfa))
+z2 = float (tan(3*alfa))
 
 print ("вы дали значение альфа:", alfa)
 print ("вы получили: ", z1)
