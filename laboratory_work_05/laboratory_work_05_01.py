@@ -1,10 +1,8 @@
 import numpy as np
+import random
 
 
 def process_matrix(matrix):
-    """
-    Обрабатывает квадратную матрицу согласно заданиям
-    """
     matrix = np.array(matrix)
     n = matrix.shape[0]
 
@@ -14,16 +12,24 @@ def process_matrix(matrix):
 
     # Задание 1: Произведение элементов в строках, которые не содержат отрицательных элементов
     print("1. Произведение элементов в строках без отрицательных элементов:")
-    products = []
+    total_product = 1
+    found_positive_rows = False
+
     for i in range(n):
         if all(matrix[i, j] >= 0 for j in range(n)):
             product = np.prod(matrix[i, :])
-            products.append(product)
+            total_product *= product  # Перемножаем произведения всех подходящих строк
+            found_positive_rows = True
             print(f"Строка {i}: {matrix[i, :]} -> Произведение = {product}")
         else:
             print(f"Строка {i}: {matrix[i, :]} -> содержит отрицательные элементы")
 
-    print(f"Результат задания 1: {products}")
+    if found_positive_rows:
+        print(f"Общее произведение строк без отрицательных элементов: {total_product}")
+    else:
+        total_product = 0  # Если нет строк без отрицательных элементов
+        print("Нет строк без отрицательных элементов")
+
     print()
 
     # Задание 2: Максимум среди сумм элементов диагоналей, параллельных главной диагонали
@@ -54,22 +60,45 @@ def process_matrix(matrix):
     max_sum = max(diagonal_sums)
     print(f"Максимальная сумма среди всех диагоналей: {max_sum}")
 
-    return products, max_sum
+    return total_product, max_sum
 
 
-# Пример использования
+def generate_random_matrix(size=4, min_val=-5, max_val=10):
+    """Генерирует случайную квадратную матрицу"""
+    matrix = []
+    for i in range(size):
+        row = []
+        for j in range(size):
+            row.append(random.randint(min_val, max_val))
+        matrix.append(row)
+    return matrix
+
+
+# Основная программа
 if __name__ == "__main__":
-    # Пример матрицы 4x4
-    example_matrix = [
-        [2, 1, 3, 4],
-        [0, 5, -2, 1],
-        [1, 2, 3, 4],
-        [1, 1, 1, 2]
-    ]
+    print("=" * 60)
+    print("ГЕНЕРАЦИЯ СЛУЧАЙНОЙ МАТРИЦЫ И ВЫПОЛНЕНИЕ ЗАДАНИЙ")
+    print("=" * 60)
 
-    products, max_diagonal_sum = process_matrix(example_matrix)
+    try:
+        # Ввод размера матрицы
+        custom_size = int(input("Введите размер матрицы (например, 3, 4, 5): ") or "4")
 
-    print("\n" + "=" * 50)
-    print("Итоговые результаты:")
-    print(f"1. Произведения строк без отрицательных элементов: {products}")
-    print(f"2. Максимальная сумма диагоналей: {max_diagonal_sum}")
+        # Генерация случайной матрицы
+        custom_matrix = generate_random_matrix(custom_size, -2, 6)
+
+        print(f"\nСгенерированная матрица {custom_size}x{custom_size}:")
+        for row in custom_matrix:
+            print(row)
+        print()
+
+        # Выполнение заданий
+        total_product, max_diagonal_sum = process_matrix(custom_matrix)
+
+        print("\n" + "=" * 50)
+        print("ИТОГОВЫЕ РЕЗУЛЬТАТЫ:")
+        print(f"1. Произведение строк без отрицательных элементов: {total_product}")
+        print(f"2. Максимальная сумма диагоналей: {max_diagonal_sum}")
+
+    except ValueError:
+        print("Ошибка: введите целое число для размера матрицы")

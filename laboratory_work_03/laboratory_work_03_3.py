@@ -1,79 +1,61 @@
-from math import *
-
-
-def taylor_ln1_plus_x(x, epsilon=1e-6):
-
-    if x <= -1 or x > 1:
-        return None, 0
-
-    n = 0
-    term = x  # первый член ряда: x
-    total = term
-    terms_count = 1
-
-    while abs(term) > epsilon:
-        n += 1
-        term = ((-1) ** n) * (x ** (n + 1)) / (n + 1)
-        total += term
-        terms_count += 1
-
-        # Защита от бесконечного цикла
-        if terms_count > 1000:
-            break
-
-    return total, terms_count
-
+import math
 
 def main():
-    # Ввод параметров
-    print("Вычисление функции ln(1+x) с помощью ряда Тейлора")
-    print("Ряд: ln(1+x) = x - x²/2 + x³/3 - x⁴/4 + ... для -1 < x ≤ 1")
-    print()
-
-    try:
-        x_start = float(input("Введите начальное значение X (Xнач): "))
-        x_end = float(input("Введите конечное значение X (Хкон): "))
-        dx = float(input("Введите шаг dx: "))
-        epsilon = float(input("Введите точность ε: "))
-    except ValueError:
-        print("Ошибка: введите числовые значения")
-        return
+    # Ввод данных
+    print('Вычисление функции ln(1+x) с помощью ряда Тейлора')
+    Xt = float(input('Xначальное = '))
+    Xe = float(input('Xконечное = '))
+    dx = float(input('Шаг dx = '))
+    eps = float(input('Точность ε = '))
 
     # Проверка корректности ввода
     if dx <= 0:
-        print("Ошибка: шаг dx должен быть положительным")
+        print("Ошибка: шаг dx должен быть больше нуля!")
         return
 
-    if epsilon <= 0:
-        print("Ошибка: точность ε должна быть положительной")
+    # Проверка области определения
+    if Xt <= -1 or Xe >= 1:
+        print("Ошибка: x должен быть в интервале (-1, 1)!")
         return
 
-    # Вывод заголовка таблицы
-    print("\n" + "=" * 65)
-    print(f"Таблица значений функции ln(1+x)")
-    print("Вычислено с помощью ряда Тейлора")
-    print("=" * 65)
-    print(f"{'Аргумент (x)':^15} {'ln(1+x) (ряд)':^18} {'ln(1+x) (math)':^18} {'Членов ряда':^12}")
-    print("-" * 65)
+    # Вывод шапки таблицы
+    print("\n" + "=" * 60)
+    print("Таблица значений функции ln(1+x)")
+    print("=" * 60)
+    print("|{:^12}|{:^15}|{:^18}|{:^10}|".format("X", "ln(1+x)", "Членов ряда", "Погрешность"))
+    print("=" * 60)
 
-    # Вычисление и вывод значений
-    x = x_start
-    while x <= x_end:
-        # Вычисление через ряд Тейлора
-        taylor_result, terms_count = taylor_ln1_plus_x(x, epsilon)
+    # Основной цикл по X
+    x = Xt
+    while x <= Xe:
+        # Инициализация переменных для ряда
+        n = 1
+        term = x  # первый член ряда (n=1): (-1)^(n+1) * x^n / n
+        sum_series = term
+        exact_value = math.log(1 + x)
 
-        # Вычисление через встроенную функцию для сравнения
-        math_result = math.log1p(x)  # math.log1p(x) = ln(1+x)
+        # Вычисление суммы ряда до достижения точности
+        while abs(term) >= eps:
+            n += 1
+            # Вычисление следующего члена ряда: (-1)^(n+1) * x^n / n
+            term = ((-1) ** (n + 1)) * (x ** n) / n
+            sum_series += term
 
-        if taylor_result is not None:
-            print(f"{x:^15.4f} {taylor_result:^18.6f} {math_result:^18.6f} {terms_count:^12}")
-        else:
-            print(f"{x:^15.4f} {'вне ОДЗ':^18} {math_result:^18.6f} {'-':^12}")
+            # Защита от бесконечного цикла
+            if n > 1000:
+                print(f"Предупреждение: для x={x} не достигнута точность за 1000 итераций")
+                break
 
+        # Вычисление погрешности
+        error = abs(exact_value - sum_series)
+
+        # Вывод строки таблицы
+        print("|{:12.4f}|{:15.8f}|{:18d}|{:10.2e}|".format(x, sum_series, n, error))
+
+        # Переход к следующему X
         x += dx
 
-    print("=" * 65)
-
+    print("=" * 60)
 
 if __name__ == "__main__":
     main()
