@@ -5,7 +5,6 @@ if  x <= 0:
     print (-0.5*x-3)
 elif 0 <= x < 3:
     y = -(9-(x**2))**(1/2)
-    print ("X= ", x, ", Y= ", y)
 elif 3 <= x <= 6:
     y = (9-(x-6)**2)**(1/2)
 print ("X = {0: 2f} Y = {1: 2f}".format(x, y))
