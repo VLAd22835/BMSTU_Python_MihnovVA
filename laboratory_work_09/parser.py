@@ -1,60 +1,78 @@
-from my_ast import Number, Sum, Sub, Print
+from my_ast import Number, Sum, Sub, Print, Block, Function, Package
 
 
 class Parser:
-    def __init__(self, tokens):
+    def __init__(self):
+        self.tokens = []
+        self.pos = 0
+
+    def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
 
-    def parse(self):
-        if self.current_token().type == 'PACKAGE':
-            self.eat('PACKAGE')
-            self.eat('IDENTIFIER')
+        # Пропускаем 'package main'
+        if self.pos < len(self.tokens) and self.current_token().type == 'PACKAGE':
+            self.consume('PACKAGE')
+            self.consume('IDENTIFIER')  # main
 
-        self.eat('FUNC')
-        self.eat('IDENTIFIER')
-        self.eat('OPEN_PAREN')
-        self.eat('CLOSE_PAREN')
-        self.eat('OPEN_BRACE')
-
-        while self.current_token().type != 'CLOSE_BRACE':
-            if self.current_token().type == 'PRINT':
-                ast = self.parse_print()
-            else:
-                self.pos += 1
-
-        self.eat('CLOSE_BRACE')
-        return ast
+        # Парсим функцию
+        return self.parse_function()
 
     def current_token(self):
-        return self.tokens[self.pos]
+        if self.pos < len(self.tokens):
+            return self.tokens[self.pos]
+        return None
 
-    def eat(self, token_type):
+    def consume(self, expected_type):
         token = self.current_token()
-        if token.type == token_type:
+        if token and token.type == expected_type:
             self.pos += 1
             return token
-        raise SyntaxError(f"Ожидался {token_type}")
+        raise SyntaxError(f"Ожидался {expected_type}, получен {token}")
+
+    def parse_function(self):
+        self.consume('FUNC')
+        func_name = self.consume('IDENTIFIER').value
+        self.consume('OPEN_PAREN')
+        self.consume('CLOSE_PAREN')
+        self.consume('OPEN_BRACE')
+
+        # Парсим операторы внутри функции
+        statements = []
+        while self.current_token() and self.current_token().type != 'CLOSE_BRACE':
+            if self.current_token().type == 'PRINT':
+                statements.append(self.parse_print())
+            else:
+                # Пропускаем неизвестные токены
+                self.pos += 1
+
+        self.consume('CLOSE_BRACE')
+
+        # Создаем функцию main
+        func = Function(func_name, [], Block(statements))
+        return Package('main', [func])
 
     def parse_print(self):
-        self.eat('PRINT')
-        self.eat('OPEN_PAREN')
+        self.consume('PRINT')
+        self.consume('OPEN_PAREN')
         expr = self.parse_expression()
-        self.eat('CLOSE_PAREN')
-        self.eat('SEMICOLON')
+        self.consume('CLOSE_PAREN')
+        self.consume('SEMICOLON')
         return Print(expr)
 
     def parse_expression(self):
+        # Парсим первый терм
         left = self.parse_term()
 
-        while self.current_token().type in ('PLUS', 'MINUS'):
-            op = self.current_token().type
-            self.eat(op)
+        # Парсим операции + и -
+        while self.current_token() and self.current_token().type in ('PLUS', 'MINUS'):
+            op_token = self.current_token()
+            self.consume(op_token.type)
             right = self.parse_term()
 
-            if op == 'PLUS':
+            if op_token.type == 'PLUS':
                 left = Sum(left, right)
-            elif op == 'MINUS':
+            elif op_token.type == 'MINUS':
                 left = Sub(left, right)
 
         return left
@@ -63,12 +81,16 @@ class Parser:
         token = self.current_token()
 
         if token.type == 'NUMBER':
-            self.eat('NUMBER')
+            self.consume('NUMBER')
             return Number(token.value)
+        elif token.type == 'IDENTIFIER':
+            self.consume('IDENTIFIER')
+            # Для простоты возвращаем Number(0) для переменных
+            return Number(0)
         elif token.type == 'OPEN_PAREN':
-            self.eat('OPEN_PAREN')
+            self.consume('OPEN_PAREN')
             expr = self.parse_expression()
-            self.eat('CLOSE_PAREN')
+            self.consume('CLOSE_PAREN')
             return expr
 
         raise SyntaxError(f"Неожиданный токен: {token}")

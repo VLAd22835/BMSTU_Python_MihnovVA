@@ -5,18 +5,24 @@ class Number:
     def eval(self):
         return int(self.value)
 
-class BinaryOp:
+
+class Sum:
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
-class Sum(BinaryOp):
     def eval(self):
         return self.left.eval() + self.right.eval()
 
-class Sub(BinaryOp):
+
+class Sub:
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
     def eval(self):
         return self.left.eval() - self.right.eval()
+
 
 class Print:
     def __init__(self, value):
@@ -27,6 +33,7 @@ class Print:
         print(result)
         return result
 
+
 class Block:
     def __init__(self, statements):
         self.statements = statements
@@ -34,6 +41,7 @@ class Block:
     def eval(self):
         for statement in self.statements:
             statement.eval()
+
 
 class Function:
     def __init__(self, name, params, body):
@@ -43,6 +51,7 @@ class Function:
 
     def eval(self):
         return self.body.eval()
+
 
 class Package:
     def __init__(self, name, functions):
