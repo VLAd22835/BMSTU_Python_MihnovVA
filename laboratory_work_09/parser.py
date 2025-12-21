@@ -1,96 +1,108 @@
-from my_ast import Number, Sum, Sub, Print, Block, Function, Package
+from rply import ParserGenerator
+from token import TokenType
+from my_ast import *
 
 
 class Parser:
     def __init__(self):
-        self.tokens = []
-        self.pos = 0
+        self.pg = ParserGenerator(
+            # Все токены, которые принимает парсер
+            [TokenType.PACKAGE, TokenType.FUNC, TokenType.PRINT,
+             TokenType.NUMBER, TokenType.IDENTIFIER,
+             TokenType.PLUS, TokenType.MINUS, TokenType.MULTIPLY, TokenType.DIVIDE,
+             TokenType.ASSIGN, TokenType.EQUAL, TokenType.NOT_EQUAL,
+             TokenType.GREATER, TokenType.LESS,
+             TokenType.OPEN_PAREN, TokenType.CLOSE_PAREN,
+             TokenType.OPEN_BRACE, TokenType.CLOSE_BRACE,
+             TokenType.SEMICOLON]
+        )
+        self._build_parser()
 
-    def parse(self, tokens):
-        self.tokens = tokens
-        self.pos = 0
+    def _build_parser(self):
+        @self.pg.production('program : package_decl')
+        def program(p):
+            return p[0]
 
-        # Пропускаем 'package main'
-        if self.pos < len(self.tokens) and self.current_token().type == 'PACKAGE':
-            self.consume('PACKAGE')
-            self.consume('IDENTIFIER')  # main
+        @self.pg.production('package_decl : PACKAGE IDENTIFIER functions')
+        def package_decl(p):
+            return PackageNode(p[1], p[2])
 
-        # Парсим функцию
-        return self.parse_function()
+        @self.pg.production('functions : function functions')
+        def functions_multiple(p):
+            return [p[0]] + p[1]
 
-    def current_token(self):
-        if self.pos < len(self.tokens):
-            return self.tokens[self.pos]
-        return None
+        @self.pg.production('functions : function')
+        def functions_single(p):
+            return [p[0]]
 
-    def consume(self, expected_type):
-        token = self.current_token()
-        if token and token.type == expected_type:
-            self.pos += 1
-            return token
-        raise SyntaxError(f"Ожидался {expected_type}, получен {token}")
+        @self.pg.production('function : FUNC IDENTIFIER OPEN_PAREN CLOSE_PAREN OPEN_BRACE statements CLOSE_BRACE')
+        def function(p):
+            return FunctionNode(p[1], [], BlockNode(p[5]))
 
-    def parse_function(self):
-        self.consume('FUNC')
-        func_name = self.consume('IDENTIFIER').value
-        self.consume('OPEN_PAREN')
-        self.consume('CLOSE_PAREN')
-        self.consume('OPEN_BRACE')
+        @self.pg.production('statements : statement statements')
+        def statements_multiple(p):
+            return [p[0]] + p[1]
 
-        # Парсим операторы внутри функции
-        statements = []
-        while self.current_token() and self.current_token().type != 'CLOSE_BRACE':
-            if self.current_token().type == 'PRINT':
-                statements.append(self.parse_print())
-            else:
-                # Пропускаем неизвестные токены
-                self.pos += 1
+        @self.pg.production('statements : statement')
+        def statements_single(p):
+            return [p[0]]
 
-        self.consume('CLOSE_BRACE')
+        @self.pg.production('statement : print_stmt')
+        def statement(p):
+            return p[0]
 
-        # Создаем функцию main
-        func = Function(func_name, [], Block(statements))
-        return Package('main', [func])
+        @self.pg.production('print_stmt : PRINT OPEN_PAREN expression CLOSE_PAREN SEMICOLON')
+        def print_stmt(p):
+            return PrintNode(p[2])
 
-    def parse_print(self):
-        self.consume('PRINT')
-        self.consume('OPEN_PAREN')
-        expr = self.parse_expression()
-        self.consume('CLOSE_PAREN')
-        self.consume('SEMICOLON')
-        return Print(expr)
+        @self.pg.production('expression : expression PLUS term')
+        @self.pg.production('expression : expression MINUS term')
+        def expression_binop(p):
+            left = p[0]
+            right = p[2]
+            op = p[1]
 
-    def parse_expression(self):
-        # Парсим первый терм
-        left = self.parse_term()
+            if op.gettokentype() == TokenType.PLUS:
+                return SumNode(left, right)
+            elif op.gettokentype() == TokenType.MINUS:
+                return SubNode(left, right)
 
-        # Парсим операции + и -
-        while self.current_token() and self.current_token().type in ('PLUS', 'MINUS'):
-            op_token = self.current_token()
-            self.consume(op_token.type)
-            right = self.parse_term()
+        @self.pg.production('expression : term')
+        def expression_term(p):
+            return p[0]
 
-            if op_token.type == 'PLUS':
-                left = Sum(left, right)
-            elif op_token.type == 'MINUS':
-                left = Sub(left, right)
+        @self.pg.production('term : term MULTIPLY factor')
+        @self.pg.production('term : term DIVIDE factor')
+        def term_binop(p):
+            left = p[0]
+            right = p[2]
+            op = p[1]
 
-        return left
+            if op.gettokentype() == TokenType.MULTIPLY:
+                return MulNode(left, right)
+            elif op.gettokentype() == TokenType.DIVIDE:
+                return DivNode(left, right)
 
-    def parse_term(self):
-        token = self.current_token()
+        @self.pg.production('term : factor')
+        def term_factor(p):
+            return p[0]
 
-        if token.type == 'NUMBER':
-            self.consume('NUMBER')
-            return Number(token.value)
-        elif token.type == 'IDENTIFIER':
-            self.consume('IDENTIFIER')
-            # Для простоты возвращаем Number(0) для переменных
-            return Number(0)
-        elif token.type == 'OPEN_PAREN':
-            self.consume('OPEN_PAREN')
-            expr = self.parse_expression()
-            self.consume('CLOSE_PAREN')
-            return expr
+        @self.pg.production('factor : NUMBER')
+        def factor_number(p):
+            return NumberNode(p[0])
 
-        raise SyntaxError(f"Неожиданный токен: {token}")
+        @self.pg.production('factor : IDENTIFIER')
+        def factor_identifier(p):
+            # Для простоты возвращаем NumberNode с 0 для переменных
+            return NumberNode("0")
+
+        @self.pg.production('factor : OPEN_PAREN expression CLOSE_PAREN')
+        def factor_paren(p):
+            return p[1]
+
+        @self.pg.error
+        def error_handler(token):
+            raise ValueError(f"Неожиданный токен: {token}")
+
+    def get_parser(self):
+        return self.pg.build()

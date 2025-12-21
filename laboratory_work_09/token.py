@@ -1,0 +1,27 @@
+from rply.token import BaseBox
+
+class TokenType:
+    PACKAGE = 'PACKAGE'
+    FUNC = 'FUNC'
+    PRINT = 'PRINT'
+    NUMBER = 'NUMBER'
+    IDENTIFIER = 'IDENTIFIER'
+    PLUS = 'PLUS'
+    MINUS = 'MINUS'
+    MULTIPLY = 'MULTIPLY'
+    DIVIDE = 'DIVIDE'
+    ASSIGN = 'ASSIGN'
+    EQUAL = 'EQUAL'
+    NOT_EQUAL = 'NOT_EQUAL'
+    GREATER = 'GREATER'
+    LESS = 'LESS'
+    OPEN_PAREN = 'OPEN_PAREN'
+    CLOSE_PAREN = 'CLOSE_PAREN'
+    OPEN_BRACE = 'OPEN_BRACE'
+    CLOSE_BRACE = 'CLOSE_BRACE'
+    SEMICOLON = 'SEMICOLON'
+    EOF = 'EOF'
+
+
+
+
