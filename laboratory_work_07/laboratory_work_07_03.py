@@ -160,15 +160,15 @@ def show_legend(R):
     # Легенда внизу
     t.goto(-R * scale, -R * scale - 60)
     t.color("black")
-    t.write("ЛЕГЕНДА:", font=("Arial", 10, "bold"))
+    t.write("ОПИСАНИЕ:", font=("Arial", 10, "bold"))
 
     t.goto(-R * scale, -R * scale - 80)
     t.color("blue")
-    t.write("● - точки ВНУТРИ фигуры (попадания)", font=("Arial", 9))
+    t.write("● - точки ВНЕ фигуры (попадания)", font=("Arial", 9))
 
     t.goto(-R * scale, -R * scale - 100)
     t.color("red")
-    t.write("● - точки ВНЕ фигуры (промахи)", font=("Arial", 9))
+    t.write("● - точки ВНУТРИ фигуры (промахи)", font=("Arial", 9))
 
     t.goto(-R * scale, -R * scale - 120)
     t.color("black")
