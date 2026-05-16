@@ -1,5 +1,5 @@
 from rply import ParserGenerator
-from token import TokenType
+from my_token import TokenType
 from my_ast import *
 
 

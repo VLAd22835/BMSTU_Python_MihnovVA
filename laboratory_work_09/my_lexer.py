@@ -1,5 +1,5 @@
 from rply import LexerGenerator
-from token import TokenType
+from my_token import TokenType
 
 
 class Lexer:
