@@ -5,11 +5,11 @@
 #print (a,b,p,d,sep="")
 #print ("=",a+b+p+d,sep="")
 
-#5
-#n = int(input("введите число n: "))
-#hours = (n // 60) % 24
-#minutes = n % 60
-#print(hours, minutes)
+# 5
+# n = int(input("введите число n: "))
+# hours = (n // 60) % 24
+# minutes = n % 60
+# print(hours,":",minutes)
 
 #6
 # d = float(input("введите толщину кольца: "))
