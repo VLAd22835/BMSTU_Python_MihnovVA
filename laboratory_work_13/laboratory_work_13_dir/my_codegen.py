@@ -145,7 +145,7 @@ class CodeGenerator:
 
     def _save_to_file(self, llvm_code, filename):
         """Сохраняет LLVM IR в файл"""
-        os.makedirs("output", exist_ok=True)
+        os.makedirs("../../laboratory_work_09/output", exist_ok=True)
 
         ll_file = f"output/{filename}.ll"
         with open(ll_file, 'w', encoding='utf-8') as f:

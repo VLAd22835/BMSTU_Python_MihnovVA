@@ -1,6 +1,6 @@
 from rply import ParserGenerator
-from my_token import TokenType
-from my_ast import *
+from laboratory_work_13.laboratory_work_13_dir.my_token import TokenType
+from laboratory_work_13.laboratory_work_13_dir.my_ast import *
 
 
 class Parser:
