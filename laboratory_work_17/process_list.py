@@ -28,12 +28,12 @@ def list_processes(limit=20):
     for i, proc in enumerate(processes[:limit]):
         print(f"{proc['pid']:<8} {proc['name']:<30} {proc['cpu']:<8.1f} {proc['mem']:<12.2f}")
 
-    print(f"\n📊 Всего процессов: {len(processes)} (показано {min(limit, len(processes))})")
+    print(f"\n Всего процессов: {len(processes)} (показано {min(limit, len(processes))})")
 
 
 def find_process_by_name(name_pattern):
     """Поиск процесса по имени"""
-    print(f"\n🔍 Поиск процессов, содержащих '{name_pattern}':")
+    print(f"\n Поиск процессов, содержащих '{name_pattern}':")
     found = False
     for proc in psutil.process_iter(['pid', 'name']):
         try:

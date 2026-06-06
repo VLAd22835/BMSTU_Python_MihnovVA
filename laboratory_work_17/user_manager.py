@@ -8,14 +8,14 @@ def add_user(username):
         # Проверяем, существует ли пользователь
         result = subprocess.run(['id', username], capture_output=True, text=True)
         if result.returncode == 0:
-            print(f"⚠️ Пользователь {username} уже существует.")
+            print(f"⚠ Пользователь {username} уже существует.")
             return False
 
         subprocess.run(['sudo', 'useradd', '-m', username], check=True)
-        print(f"✅ Пользователь {username} успешно создан.")
+        print(f" Пользователь {username} успешно создан.")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Ошибка при создании пользователя {username}: {e}")
+        print(f" Ошибка при создании пользователя {username}: {e}")
         return False
 
 
@@ -25,14 +25,14 @@ def delete_user(username):
         # Проверяем, существует ли пользователь
         result = subprocess.run(['id', username], capture_output=True, text=True)
         if result.returncode != 0:
-            print(f"⚠️ Пользователь {username} не существует.")
+            print(f"⚠ Пользователь {username} не существует.")
             return False
 
         subprocess.run(['sudo', 'userdel', '-r', username], check=True)
-        print(f"✅ Пользователь {username} успешно удалён.")
+        print(f" Пользователь {username} успешно удалён.")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Ошибка при удалении пользователя {username}: {e}")
+        print(f" Ошибка при удалении пользователя {username}: {e}")
         return False
 
 

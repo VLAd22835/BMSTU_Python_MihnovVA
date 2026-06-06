@@ -6,15 +6,15 @@ def copy_file(source, destination):
     """Копирование файла"""
     try:
         if not os.path.exists(source):
-            print(f"⚠️ Исходный файл {source} не найден.")
+            print(f"️ Исходный файл {source} не найден.")
             return False
 
         shutil.copy2(source, destination)  # copy2 сохраняет метаданные
-        print(f"✅ Файл '{source}' скопирован в '{destination}'")
+        print(f" Файл '{source}' скопирован в '{destination}'")
         print(f"   Размер файла: {os.path.getsize(destination)} байт")
         return True
     except Exception as e:
-        print(f"❌ Ошибка при копировании: {e}")
+        print(f" Ошибка при копировании: {e}")
         return False
 
 
@@ -22,14 +22,14 @@ def delete_file(filename):
     """Удаление файла"""
     try:
         if not os.path.exists(filename):
-            print(f"⚠️ Файл {filename} не найден.")
+            print(f" Файл {filename} не найден.")
             return False
 
         os.remove(filename)
-        print(f"✅ Файл '{filename}' успешно удалён.")
+        print(f" Файл '{filename}' успешно удалён.")
         return True
     except Exception as e:
-        print(f"❌ Ошибка при удалении: {e}")
+        print(f" Ошибка при удалении: {e}")
         return False
 
 

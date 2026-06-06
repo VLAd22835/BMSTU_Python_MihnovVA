@@ -18,7 +18,7 @@ def monitor_resources(duration_seconds=30, interval_seconds=5):
 
     while time.time() - start_time < duration_seconds:
         measurement_count += 1
-        print(f"📊 Замер #{measurement_count} - {datetime.now().strftime('%H:%M:%S')}")
+        print(f" Замер #{measurement_count} - {datetime.now().strftime('%H:%M:%S')}")
         print(f"   ├─ CPU загрузка: {psutil.cpu_percent(interval=1)}%")
         print(f"   ├─ Оперативная память: {psutil.virtual_memory().percent}% (использовано)")
         print(f"   ├─ Диск (/) заполнен на: {psutil.disk_usage('/').percent}%")
@@ -28,7 +28,7 @@ def monitor_resources(duration_seconds=30, interval_seconds=5):
         if time.time() - start_time < duration_seconds - interval_seconds:
             time.sleep(interval_seconds)
 
-    print(f"\n✅ Мониторинг завершён. Выполнено замеров: {measurement_count}")
+    print(f"\n Мониторинг завершён. Выполнено замеров: {measurement_count}")
 
 
 def quick_monitor():
